@@ -3,10 +3,8 @@
 import { useState, useEffect, Dispatch, SetStateAction } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-
 import { useGetStatusesQuery } from "@/app/store/services/statuses"
 import { useRouter } from "next/navigation"
-
 
 const typeColors = {
   "Verification": "bg-purple-100",
@@ -14,28 +12,34 @@ const typeColors = {
   "Customer Support": "bg-teal-50"
 }
 
-export default function EnhancedCallLog({ calls, selectedCall, setSelectedCall }: { calls: Call[], selectedCall:string, setSelectedCall:Dispatch<SetStateAction<string>> }) {
+const capitalizeFirstLetter = (string: string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+}
+
+export default function EnhancedCallLog({ calls, selectedCall, setSelectedCall }: { calls: Call[], selectedCall: string, setSelectedCall: Dispatch<SetStateAction<string>> }) {
 
   const [error, setError] = useState(null);
   const token = localStorage.getItem("token");
-	const router = useRouter();
-	if (!token) {
-		router.push("/");
-		return;
-	}
-  const { data:statusesResponse } = useGetStatusesQuery(token);
-  const findStatus = (id:number) => {
+  const router = useRouter();
+  
+  if (!token) {
+    router.push("/");
+    return;
+  }
+
+  const { data: statusesResponse } = useGetStatusesQuery(token);
+  
+  const findStatus = (id: number) => {
     const status = statusesResponse?.result.data.statuses.find(status => status.id === id);
-    return status
+    return status;
   }
 
   useEffect(() => {
-    console.log("EnhancedCallLog component mounted")
-  }, [])
+    console.log("EnhancedCallLog component mounted");
+  }, []);
 
-  
   if (error) {
-    return <div>Error: {error}</div>
+    return <div>Error: {error}</div>;
   }
 
   return (
@@ -65,10 +69,10 @@ export default function EnhancedCallLog({ calls, selectedCall, setSelectedCall }
                   <TableCell className="font-medium">{call.clientName}</TableCell>
                   <TableCell>
                     <Badge style={{ background: call.statusColor }} className={`text-white hover:bg-gray-100`}>
-                      {call.status}
+                      {capitalizeFirstLetter(call.status)}
                     </Badge>
                   </TableCell>
-                  <TableCell>{call.type}</TableCell>
+                  <TableCell>{capitalizeFirstLetter(call.type)}</TableCell>
                   <TableCell>{call.duration}</TableCell>
                   <TableCell>{new Date(call.date).toLocaleString()}</TableCell>
                   <TableCell>{call.initiatedBy}</TableCell>
@@ -78,7 +82,6 @@ export default function EnhancedCallLog({ calls, selectedCall, setSelectedCall }
           </Table>
         </div>
       )}
-
     </div>
   )
 }

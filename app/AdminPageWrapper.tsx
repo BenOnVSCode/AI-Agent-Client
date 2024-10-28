@@ -1,3 +1,4 @@
+"use client"
 import { ReactNode, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useProfileQuery } from "./store/services/auth";

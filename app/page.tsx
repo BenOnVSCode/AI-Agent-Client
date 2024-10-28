@@ -67,7 +67,7 @@ export default function LoginPage() {
 
 	useEffect(() => {
 		if (profileData) {
-			dispatch(changeInfo({ name: profileData.result.data.name, email: profileData.result.data.email, role: profileData.result.data.role }));
+			dispatch(changeInfo({ name: profileData.result.data.name, email: profileData.result.data.email, role: profileData.result.data.role, id: profileData.result.data.id }));
 			router.push("/calls");
 		}
 	}, [profileData, router]);

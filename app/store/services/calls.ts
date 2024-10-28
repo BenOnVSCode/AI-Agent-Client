@@ -7,10 +7,16 @@ export const callsApi = createApi({
   }),
   endpoints: (builder) => ({
     getCalls: builder.query<CallResponse, { page: number }>({
-      
       query: ({ page }) => `getAllCalls?page=${page}`,
-    })
+    }),
+    createVerificationCall: builder.mutation<CallResponse, VerificationCallRequest>({
+      query: (data: VerificationCallRequest) => ({
+        url: '/createVerificationCall',
+        method: 'POST',
+        body: data,
+      }),
+    }),
   })
 })
 
-export const { useGetCallsQuery } = callsApi
+export const { useGetCallsQuery, useCreateVerificationCallMutation } = callsApi

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
 	Table,
 	TableBody,
@@ -24,6 +24,7 @@ import {
 import { Trash2, Edit, Search } from "lucide-react";
 import Navbar from "@/components/navbar";
 import AdminPageWrapper from "../AdminPageWrapper";
+import { useGetStatusesQuery } from "../store/services/statuses";
 
 interface Status {
 	id: number;
@@ -31,14 +32,9 @@ interface Status {
 	color: string;
 }
 
-const initialStatuses: Status[] = [
-	{ id: 1, name: "Active", color: "#4CAF50" },
-	{ id: 2, name: "Inactive", color: "#F44336" },
-	{ id: 3, name: "Pending", color: "#FFC107" },
-];
 
 export default function StatusManagement() {
-	const [statuses, setStatuses] = useState<Status[]>(initialStatuses);
+	const [statuses, setStatuses] = useState<Status[]>([]);
 	const [selectedStatuses, setSelectedStatuses] = useState<number[]>([]);
 	const [editingStatus, setEditingStatus] = useState<Status | null>(null);
 	const [deletingStatus, setDeletingStatus] = useState<Status | null>(null);
@@ -46,7 +42,13 @@ export default function StatusManagement() {
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 	const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
 	const [searchTerm, setSearchTerm] = useState("");
-
+	const token = localStorage.getItem("token")
+  const { data:statusesResponse } = useGetStatusesQuery(token!!, { skip: !token});
+	useEffect(() => {
+		if (statusesResponse) {
+			setStatuses(statusesResponse.result.data.statuses);
+		}
+	}, [statusesResponse])
 	const handleSelectStatus = (statusId: number) => {
 		setSelectedStatuses((prev) =>
 			prev.includes(statusId)
@@ -100,7 +102,7 @@ export default function StatusManagement() {
 	};
 
 	const handleSearch = () => {
-		const filteredStatuses = initialStatuses.filter((status) =>
+		const filteredStatuses = statuses.filter((status) =>
 			status.name.toLowerCase().includes(searchTerm.toLowerCase())
 		);
 		setStatuses(filteredStatuses);

@@ -1,3 +1,4 @@
+
 import { Dispatch, SetStateAction, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import {
@@ -11,20 +12,6 @@ import { Phone, FileText } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
 
-const callData = {
-  type: "Inbound",
-  date: "2023-05-15T14:30:00Z",
-  transcript: "This is a sample transcript of the call...",
-  number: "+1 (555) 123-4567",
-  status: "Completed",
-  recordingUrl: "https://example.com/recording/123456",
-  clientName: "John Doe",
-  postCode: "SW1A 1AA",
-  poa: "Yes",
-  initiatedBy: "Customer",
-  duration: "00:15:30",
-  summary: "Customer called to inquire about their recent order. The agent provided tracking information and estimated delivery date. The customer expressed satisfaction with the service."
-}
 
 export default function CallDataModal({ isOpen, setIsOpen, callData }: { isOpen: boolean, setIsOpen: Dispatch<SetStateAction<boolean>>, callData?: Call}) {
 
@@ -80,6 +67,10 @@ export default function CallDataModal({ isOpen, setIsOpen, callData }: { isOpen:
                   <span className="col-span-2 text-sm">{callData.clientName}</span>
                 </div>
                 <div className="grid grid-cols-3 items-center gap-2">
+                  <span className="text-sm font-light">Address:</span>
+                  <span className="col-span-2 text-sm">{callData.address}</span>
+                </div>
+                <div className="grid grid-cols-3 items-center gap-2">
                   <span className="text-sm font-light">Post Code:</span>
                   <span className="col-span-2 text-sm">{callData.postCode}</span>
                 </div>
@@ -96,6 +87,21 @@ export default function CallDataModal({ isOpen, setIsOpen, callData }: { isOpen:
             <div className="space-y-2">
               <h3 className="text-lg font-medium">Call Summary</h3>
               <p className="text-sm font-light">{callData.summary}</p>
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-lg font-medium">Payment Information</h3>
+              <div className="grid grid-cols-3 items-center gap-2">
+                <span className="text-sm font-light">Is Split:</span>
+                <span className="col-span-2 text-sm">{callData.split ? "Yes" : "No"}</span>
+              </div>
+              <div className="grid grid-cols-3 items-center gap-2">
+                <span className="text-sm font-light">Is DD:</span>
+                <span className="col-span-2 text-sm">{callData.isDD ? "Yes" : "No"}</span>
+              </div>
+              <div className="grid grid-cols-3 items-center gap-2">
+                <span className="text-sm font-light">Price</span>
+                <span className="col-span-2 text-sm">{callData.price}</span>
+              </div>
             </div>
             <div className="space-y-2">
               <h3 className="text-lg font-medium">Resources</h3>
