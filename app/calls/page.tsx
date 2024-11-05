@@ -15,7 +15,7 @@ import { useSelector } from "react-redux";
 import { changePage } from "../store/slices";
 
 export default function Home() {
-	const token = localStorage.getItem("token");
+	const [token, setToken] = useState<string | null>(null);
   const currentPage = useSelector((state:StoreType) => state.state.callsPage )
 	const { data: callsResponse, isFetching:callsLoading } = useGetCallsQuery({ page: currentPage, token: token!! }, { skip: !token });
 	const { data: statuses } = useGetStatusesQuery(token!!);
@@ -30,6 +30,11 @@ export default function Home() {
     setCurrentCallData(call);
     setIsOpen(true);
   }, [selectedCall])
+
+	useEffect(() => {
+		setToken(localStorage.getItem("token"));
+	}, []);
+
 	return (
 		<AuthWrapper>
 			<main>
