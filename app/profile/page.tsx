@@ -51,7 +51,7 @@ export default function ProfilePage() {
 												id="email"
 												type="email"
 												placeholder="Enter your email"
-												value={profileInfo.email}
+												value={profileInfo?.email}
 												disabled={true}
 												onChange={(e) => setEmail(e.target.value)}
 												className="pl-8"
