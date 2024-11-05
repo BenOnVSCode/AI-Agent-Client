@@ -20,7 +20,7 @@ export const usersApi = createApi({
         headers: {
           Authorization: `Bearer ${token.replace(/"/g, '')}`,
         },
-        method: 'DELETE',
+        method: 'POST',
         body: { id }
       })
     }),
@@ -28,13 +28,19 @@ export const usersApi = createApi({
       query: (data) => ({
         url: '/createUser',
         method: 'POST',
+        headers: {
+          Authorization: `Bearer ${data.token.replace(/"/g, '')}`,
+        },
         body: data
       })
     }),
-    updateUser: builder.mutation<UsersResponse, UserRequest>({
+    updateUser: builder.mutation<UsersResponse, UserUpdateRequest>({
       query: (data) => ({
         url: '/updateUser',
-        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${data.token.replace(/"/g, '')}`,
+        },
+        method: 'POST',
         body: data
       })
     })

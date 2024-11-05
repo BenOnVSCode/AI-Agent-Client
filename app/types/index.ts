@@ -136,10 +136,19 @@ interface UsersResponse {
 	}
 }
 
-interface UserRequest {
+interface UserRequest extends RequestWithToken {
 	name: string,
 	email: string,
 	role: string,
 	password: string,
 
+}
+
+
+interface UserUpdateRequest extends RequestWithToken {
+	id: number,
+	name?: string,
+	email?: string,
+	role?: string,
+	password?: string,
 }

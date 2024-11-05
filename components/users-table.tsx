@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Pencil, Trash2 } from "lucide-react";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"; // Adjust the import path as necessary
+import { useState, useEffect, use } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
 	Table,
 	TableBody,
@@ -11,15 +11,31 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
 	Sheet,
 	SheetContent,
 	SheetHeader,
 	SheetTitle,
+	SheetDescription,
 	SheetFooter,
 	SheetClose,
 } from "@/components/ui/sheet";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Pencil, Trash2, Filter } from "lucide-react";
+import { format } from "date-fns";
 import {
 	Dialog,
 	DialogContent,
@@ -27,155 +43,202 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-	DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import AdminWrapper from "@/app/AdminPageWrapper";
+import { useDeleteUserMutation, useGetUsersQuery, useUpdateUserMutation } from "@/app/store/services/users";
+import AdminPageWrapper from "@/app/AdminPageWrapper";
 import Navbar from "./navbar";
-import { useGetUsersQuery } from "@/app/store/services/users";
 
-const initialUsers: User[] = [];
+interface User {
+	id: number;
+	name: string;
+	email: string;
+	role: string;
+	createdAt: string;
+}
+
+
+
 export default function UserTable() {
-	const [users, setUsers] = useState<User[]>(initialUsers);
+	const [users, setUsers] = useState<User[]>([]);
+	const [token, setToken] = useState<string | null>(null);
+	const [localUsers, setLocalUsers] = useState<User[]>([]);
+	const [searchTerm, setSearchTerm] = useState("");
+	const [roleFilter, setRoleFilter] = useState("");
 	const [editingUser, setEditingUser] = useState<User | null>(null);
 	const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-	const [userToDelete, setUserToDelete] = useState<User | null>(null);
-	const [token, setToken] = useState<string | null>(null);
+	const [userToDelete, setUserToDelete] = useState<number | null>(null);
+	const [deleteUser] = useDeleteUserMutation();
+	const [updateUser] = useUpdateUserMutation();
+	const { data: usersResponse } = useGetUsersQuery(token!!, { skip: !token });
 	useEffect(() => {
 		setToken(localStorage.getItem("token"));
-	}, [])
-	const { data, isLoading, isError } = useGetUsersQuery(token!!, { skip: !token});
-	const handleEditUser = (user: User) => {
-		setEditingUser(user);
-		setIsEditSheetOpen(true); 
+	}, []);
+
+	useEffect(() => {
+		if (usersResponse) {
+			setLocalUsers(usersResponse.result.data.users);
+		}
+	}, [usersResponse]);
+	const filteredUsers = localUsers.filter(
+		(user) =>
+			user.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+			(roleFilter === "" || user.role === roleFilter)
+	);
+
+	const handleDelete = (userId: number) => {
+		setUserToDelete(userId);
+		setIsDeleteDialogOpen(true);
 	};
 
-	const handleDeleteUser = (user: User) => {
-		setUserToDelete(user);
-		setIsDeleteDialogOpen(true);
+	const handleEdit = (user: User) => {
+		setEditingUser(user);
+		setIsEditSheetOpen(true);
+	};
+
+	const handleUpdateUser = (updatedUser: User) => {
+		setLocalUsers(
+			localUsers.map((user) =>
+				user.id === updatedUser.id ? updatedUser : user
+			)
+		);
+		updateUser({...updatedUser, token: token!!});
+		setIsEditSheetOpen(false);
 	};
 
 	const confirmDelete = () => {
 		if (userToDelete) {
-			setUsers(users.filter((user) => user.id !== userToDelete.id));
+			setLocalUsers(localUsers.filter((user) => user.id !== userToDelete));
+			deleteUser({ id: userToDelete, token: token!! });
 			setIsDeleteDialogOpen(false);
-			setUserToDelete(null);
 		}
 	};
-
-	const handleEditSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-		if (editingUser) {
-			setUsers(
-				users.map((user) => (user.id === editingUser.id ? editingUser : user))
-			);
-			setIsEditSheetOpen(false);
-			setEditingUser(null);
-		}
-	};
-
-	useEffect(() => {
-		if (data) {
-			setUsers(data.result.data.users);
-		}
-	}, [data]);
 
 	return (
-		<AdminWrapper>
-      <Navbar />
-			<div className="mt-4 m-4">
-				<div className="border rounded-lg shadow-md bg-white">
-					<div className="-m-1">
-						<Table>
-							<TableHeader>
-								<TableRow>
-									<TableHead>Name</TableHead>
-									<TableHead>Email</TableHead>
-									<TableHead>Created Date</TableHead>
-									<TableHead>Actions</TableHead>
-								</TableRow>
-							</TableHeader>
-							<TableBody>
-								{data?.result.data.users.map((user) => (
-									<TableRow key={user.id}>
-										<TableCell className="py-2">{user.name}</TableCell>
-										<TableCell className="py-2">{user.email}</TableCell>
-										<TableCell className="py-2">
-											{user.createdAt.toString()}
-										</TableCell>
-										<TableCell className="py-2">
-											<Button
-												variant="ghost"
-												size="icon"
-												onClick={() => handleEditUser(user)}
-											>
-												<Pencil className="h-4 w-4" />
-											</Button>
-											<Button
-												variant="ghost"
-												size="icon"
-												onClick={() => handleDeleteUser(user)}
-											>
-												<Trash2 className="h-4 w-4" />
-											</Button>
-										</TableCell>
-									</TableRow>
-								))}
-							</TableBody>
-						</Table>
-					</div>
+		<AdminPageWrapper>
+			<Navbar />
+			<div className="p-4">
+				<div className="flex justify-between mb-4">
+					<Input
+						placeholder="Search users..."
+						value={searchTerm}
+						onChange={(e) => setSearchTerm(e.target.value)}
+						className="max-w-sm"
+					/>
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button variant="outline">
+								<Filter className="mr-2 h-4 w-4" />
+								Filter
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent>
+							<DropdownMenuItem onSelect={() => setRoleFilter("")}>
+								All Roles
+							</DropdownMenuItem>
+							<DropdownMenuItem onSelect={() => setRoleFilter("ADMIN")}>
+								ADMIN
+							</DropdownMenuItem>
+							<DropdownMenuItem onSelect={() => setRoleFilter("USER")}>
+								USER
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
 				</div>
+			<div className="rounded-md border shadow-md overflow-hidden my-4">
+			<Table className="border rounded-lg shadow-md overflow-hidden">
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Role</TableHead>
+            <TableHead>Creation Date</TableHead>
+            <TableHead>Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filteredUsers.map((user) => (
+            <TableRow key={user.id}>
+              <TableCell>{user.name}</TableCell>
+              <TableCell>{user.email}</TableCell>
+              <TableCell>{user.role}</TableCell>
+              <TableCell>{format(new Date(user.createdAt), 'PP')}</TableCell>
+              <TableCell>
+                <Button variant="ghost" size="icon" onClick={() => handleEdit(user)}>
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="icon" onClick={() => handleDelete(user.id)}>
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+			</div>
+			
 
 				<Sheet open={isEditSheetOpen} onOpenChange={setIsEditSheetOpen}>
 					<SheetContent>
 						<SheetHeader>
 							<SheetTitle>Edit User</SheetTitle>
+							<SheetDescription>
+								Make changes to the user's information here.
+							</SheetDescription>
 						</SheetHeader>
 						{editingUser && (
-							<form onSubmit={handleEditSubmit} className="space-y-4 mt-4">
+							<form
+								onSubmit={(e) => {
+									e.preventDefault();
+									const formData = new FormData(e.currentTarget);
+									handleUpdateUser({
+										...editingUser,
+										name: formData.get("name") as string,
+										email: formData.get("email") as string,
+										role: formData.get("role") as string,
+									});
+								}}
+								className="space-y-4 mt-4"
+							>
 								<div>
 									<Label htmlFor="name">Name</Label>
 									<Input
 										id="name"
-										value={editingUser.name}
-										onChange={(e) =>
-											setEditingUser({ ...editingUser, name: e.target.value })
-										}
+										name="name"
+										defaultValue={editingUser.name}
 									/>
 								</div>
 								<div>
 									<Label htmlFor="email">Email</Label>
 									<Input
 										id="email"
+										name="email"
+										defaultValue={editingUser.email}
 										type="email"
-										value={editingUser.email}
-										onChange={(e) =>
-											setEditingUser({ ...editingUser, email: e.target.value })
-										}
 									/>
 								</div>
 								<div>
 									<Label htmlFor="password">Password</Label>
 									<Input
 										id="password"
+										name="password"
 										type="password"
-										placeholder="Enter new password"
 									/>
 								</div>
 								<div>
-									<Label htmlFor="password">Role</Label>
-									<Select >
-										<SelectTrigger id="role">
+									<Label htmlFor="role">Role</Label>
+									<Select name="role" defaultValue={editingUser.role}>
+										<SelectTrigger>
 											<SelectValue placeholder="Select a role" />
 										</SelectTrigger>
-										<SelectContent defaultValue={editingUser.role}>
-											<SelectItem value="admin">Admin</SelectItem>
-											<SelectItem value="user">User</SelectItem>
+										<SelectContent>
+											<SelectItem value="ADMIN">ADMIN</SelectItem>
+											<SelectItem value="USER">USER</SelectItem>
+											<SelectItem value="editor">Editor</SelectItem>
 										</SelectContent>
 									</Select>
 								</div>
+
 								<SheetFooter>
 									<SheetClose asChild>
 										<Button type="submit">Save changes</Button>
@@ -185,14 +248,15 @@ export default function UserTable() {
 						)}
 					</SheetContent>
 				</Sheet>
-
 				<Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
 					<DialogContent>
 						<DialogHeader>
-							<DialogTitle>Are you sure?</DialogTitle>
+							<DialogTitle>
+								Are you sure you want to delete this user?
+							</DialogTitle>
 							<DialogDescription>
 								This action cannot be undone. This will permanently delete the
-								user account.
+								user's account and remove their data from our servers.
 							</DialogDescription>
 						</DialogHeader>
 						<DialogFooter>
@@ -209,6 +273,6 @@ export default function UserTable() {
 					</DialogContent>
 				</Dialog>
 			</div>
-		</AdminWrapper>
+		</AdminPageWrapper>
 	);
 }
