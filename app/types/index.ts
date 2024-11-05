@@ -4,7 +4,9 @@ interface Token {
 		id: string;
 	};
 }
-
+interface RequestWithToken {
+	token: string
+}
 interface LoginResponse {
 	result: {
 		data: {
@@ -59,6 +61,8 @@ interface Call {
 	isDD: boolean;
 	price: number;
 }
+
+
 interface CallResponse {
 	result: {
 		data: {
@@ -82,7 +86,7 @@ interface StatusesResponse {
 	};
 }
 
-interface VerificationCallRequest {
+interface VerificationCallRequest extends RequestWithToken {
 	name: string;
 	address: string;
 	id: string;
@@ -95,3 +99,47 @@ interface VerificationCallRequest {
 	postCode: string
 }
  
+
+interface SaleCallRequest extends RequestWithToken {
+	name: string,
+	address: string,
+	postCode: string,
+	number: string,
+	userId: number,
+}
+
+
+interface SaleCallExcelRequest {
+	calls: Array<{
+		name: string, 
+		address: string,
+		postCode: string,
+		number: string,
+	}>,
+	initiatedBy: number,
+	token: string
+}
+
+interface User {
+	id: number;
+	name: string;
+	email: string;
+	role: string;
+	createdAt: string
+}
+
+interface UsersResponse {
+	result: {
+		data: {
+			users: Array<User>
+		}
+	}
+}
+
+interface UserRequest {
+	name: string,
+	email: string,
+	role: string,
+	password: string,
+
+}

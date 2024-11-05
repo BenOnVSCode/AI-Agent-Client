@@ -1,9 +1,8 @@
-import { ReactNode, useEffect } from "react";
+"use client"
+import { ReactNode, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useProfileQuery } from "./store/services/auth";
 import { LoadingSpinner } from "@/components/loading";
-
-
 
 interface AdminWrapperProps {
   children: ReactNode;
@@ -11,23 +10,32 @@ interface AdminWrapperProps {
 
 const AdminWrapper = ({ children }: AdminWrapperProps) => {
   const router = useRouter();
-  const token = localStorage.getItem("token")
-  const { data: profileData, isFetching, isError } = useProfileQuery(token!!, {skip: !token});
-  useEffect(() => { 
-    if (isError || !profileData) {
+  const [token, setToken] = useState<string | null>(null);
+
+  // Set token only on the client side
+  useEffect(() => {
+    setToken(localStorage.getItem("token"));
+  }, []);
+
+  const { data: profileData, isFetching, isError } = useProfileQuery(token!, { skip: !token });
+
+  useEffect(() => {
+    if (isError || (!isFetching && !profileData)) {
       router.push("/");
     }
-  }, [isFetching, router]);
+  }, [isError, isFetching, profileData, router]);
 
-  if (isFetching) {
+  if (isFetching || !token) {
     return (
       <main>
         <LoadingSpinner />
       </main>
-    )
+    );
   }
-  if(profileData?.result.data.role !== "ADMIN") return null
-  return <>{ children }</>
+
+  if (profileData?.result.data.role !== "ADMIN") return null;
+
+  return <>{children}</>;
 };
 
 export default AdminWrapper;

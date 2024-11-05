@@ -19,7 +19,10 @@ const capitalizeFirstLetter = (string: string) => {
 export default function EnhancedCallLog({ calls, selectedCall, setSelectedCall }: { calls: Call[], selectedCall: string, setSelectedCall: Dispatch<SetStateAction<string>> }) {
 
   const [error, setError] = useState(null);
-  const token = localStorage.getItem("token");
+  const [token, setToken] = useState<string | null>(null);
+  useEffect(() => {
+    setToken(localStorage.getItem("token"));
+  }, [])
   const router = useRouter();
   
   if (!token) {
@@ -64,7 +67,7 @@ export default function EnhancedCallLog({ calls, selectedCall, setSelectedCall }
                 <TableRow
                   onClick={() => setSelectedCall(call.id)}
                   key={call.id}
-                  className={`cursor-pointer ${typeColors[call.type as CallType]}`}
+                  className={`cursor-pointer ${call.type === 'verification' ? "bg-[#e2f9ee]" : "bg-[#CDC1FF]"} ${typeColors[call.type as CallType]}`}
                 >
                   <TableCell className="font-medium">{call.clientName}</TableCell>
                   <TableCell>

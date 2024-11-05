@@ -42,7 +42,7 @@ export default function StatusManagement() {
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 	const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
 	const [searchTerm, setSearchTerm] = useState("");
-	const token = localStorage.getItem("token")
+	const [token, setToken] = useState<string | null>(null);
   const { data:statusesResponse } = useGetStatusesQuery(token!!, { skip: !token});
 	useEffect(() => {
 		if (statusesResponse) {
@@ -107,7 +107,9 @@ export default function StatusManagement() {
 		);
 		setStatuses(filteredStatuses);
 	};
-
+	useEffect(() => {
+		setToken(localStorage.getItem("token"));
+	}, [])
 	return (
 		<AdminPageWrapper>
 			<main>

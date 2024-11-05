@@ -18,15 +18,19 @@ import { useRouter } from "next/navigation";
 import { changeInfo } from "./store/slices";
 import { LoadingSpinner } from "@/components/loading";
 
-
 export default function LoginPage() {
 	const router = useRouter();
 	const dispatch = useDispatch();
 	const [credentials, setCredentials] = useState({ email: "", password: "" });
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
+	const [token, setToken] = useState<string | null>(null);
 	const [createUser] = useLoginUserMutation();
-	const token = localStorage.getItem("token");
+
+	// Retrieve the token on the client side
+	useEffect(() => {
+		setToken(localStorage.getItem("token"));
+	}, []);
 
 	const { data: profileData, error: profileError, isLoading: isProfileLoading } = useProfileQuery(token || "", {
 		skip: !token,
@@ -52,7 +56,9 @@ export default function LoginPage() {
 			if (res.error) throw new Error("Invalid credentials");
 
 			const loginResponse: LoginResponse = res.data;
-			localStorage.setItem("token", JSON.stringify(loginResponse.result.data.token));
+			const newToken = loginResponse.result.data.token;
+			localStorage.setItem("token", newToken);
+			setToken(newToken);  // Update the token state to re-trigger profile query
 			router.push("/");
 		} catch (err) {
 			toast({
@@ -67,10 +73,17 @@ export default function LoginPage() {
 
 	useEffect(() => {
 		if (profileData) {
-			dispatch(changeInfo({ name: profileData.result.data.name, email: profileData.result.data.email, role: profileData.result.data.role, id: profileData.result.data.id }));
+			dispatch(
+				changeInfo({
+					name: profileData.result.data.name,
+					email: profileData.result.data.email,
+					role: profileData.result.data.role,
+					id: profileData.result.data.id,
+				})
+			);
 			router.push("/calls");
 		}
-	}, [profileData, router]);
+	}, [profileData, router, dispatch]);
 
 	if (isProfileLoading) {
 		return (
@@ -80,7 +93,7 @@ export default function LoginPage() {
 		);
 	}
 
-	if (profileError) console.log(profileError);
+	if (profileError) console.error(profileError);
 
 	return (
 		<div className="min-h-screen flex items-center justify-center bg-gray-100">

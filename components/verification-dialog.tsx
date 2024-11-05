@@ -1,4 +1,5 @@
-import { useState } from "react";
+"use client"
+import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,10 +12,14 @@ import { useProfileQuery } from "@/app/store/services/auth";
 
 export const VerificationDialog = () => {
   const [createVerificationCall] = useCreateVerificationCallMutation();
-  const token = localStorage.getItem("token")
+  const [token, setToken] = useState<string | null>(null);
+  useEffect(() => {
+    setToken(localStorage.getItem("token"));
+  }, [])
   const { data:profile } = useProfileQuery(token!!, { skip: !token});
   const [formData, setFormData] = useState<VerificationCallRequest>({
     initiatedBy: profile?.result.data.id!!,
+    token: token!!,
     name: "",
     address: "",
     id: "",

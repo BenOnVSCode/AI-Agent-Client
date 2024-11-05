@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Mail, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,9 +23,12 @@ export default function ProfilePage() {
 	const [newPassword, setNewPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const [message, setMessage] = useState("");
-  const token = localStorage.getItem("token")
+	const [token, setToken] = useState<string | null>(null);
   const { data:profile } = useProfileQuery(token!!, { skip: !token});
   const profileInfo  = profile?.result.data!!;
+	useEffect(() => {
+		setToken(localStorage.getItem("token"));
+	}, [])
   const handleSubmit = () => {}
 	return (
 		<AuthWrapper>
