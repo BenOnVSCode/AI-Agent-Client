@@ -19,12 +19,8 @@ const AdminWrapper = ({ children }: AdminWrapperProps) => {
   const { data: profileData, isFetching, isError } = useProfileQuery(token!, { skip: !token });
 
   useEffect(() => {
-    if ((isError || !profileData) && !isFetching) {
-      router.push("/");
-    }
-    if (profileData?.result.data.role !== "ADMIN") {
-      router.push("/calls");
-    }
+   if(isError) router.push("/");
+   if(profileData && profileData?.result.data.role !== "ADMIN") router.push("/calls");
   }, [isError, isFetching, profileData, router]);
 
   if (isFetching || !token) {

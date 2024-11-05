@@ -17,16 +17,17 @@ const AuthWrapper = ({ children }: AuthWrapperProps) => {
 
   useEffect(() => {
     setToken(localStorage.getItem("token"));
+    if(!localStorage.getItem("token")) {
+      router.push("/");
+    }
   }, []);
 
   const { data: profileData, isFetching, isError } = useProfileQuery(token!, { skip: !token });
 
   useEffect(() => {
-    if (!isFetching) {
-      if (isError || !profileData) {
+    if (isError) {
+      if(!profileData) {
         router.push("/");
-      } else {
-        dispatch(changeInfo(profileData.result.data));
       }
     }
   }, [isError, isFetching, profileData, router, dispatch]);

@@ -23,9 +23,9 @@ export default function Navbar() {
 			<div className="flex h-16 items-center px-4">
 				<div className="mr-4 hidden md:flex">
 					<nav className="flex items-center space-x-6 text-sm font-medium">
-						{links.map((link) =>
+						{links.map((link, index) =>
 							link.adminOnly ? (
-								<AdminItemWrapper>
+								<AdminItemWrapper key={index}>
 									<Link
 										key={link.href}
 										href={link.href}

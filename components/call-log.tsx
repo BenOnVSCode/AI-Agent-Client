@@ -24,22 +24,13 @@ export default function EnhancedCallLog({ calls, selectedCall, setSelectedCall }
     setToken(localStorage.getItem("token"));
   }, [])
   const router = useRouter();
-  
-  if (!token) {
-    router.push("/");
-    return;
-  }
 
-  const { data: statusesResponse } = useGetStatusesQuery(token);
+  const { data: statusesResponse } = useGetStatusesQuery(token!!, { skip: !token });
   
   const findStatus = (id: number) => {
     const status = statusesResponse?.result.data.statuses.find(status => status.id === id);
     return status;
   }
-
-  useEffect(() => {
-    console.log("EnhancedCallLog component mounted");
-  }, []);
 
   if (error) {
     return <div>Error: {error}</div>;

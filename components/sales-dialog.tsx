@@ -67,7 +67,6 @@ export const SalesDialog = () => {
         const worksheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
         const formattedData = formatExcelData(jsonData);
-        console.log(formattedData);
         setFileData(formattedData);
       };
       reader.readAsArrayBuffer(file);

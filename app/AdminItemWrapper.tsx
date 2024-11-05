@@ -20,9 +20,7 @@ const AdminWrapper = ({ children }: AdminWrapperProps) => {
   const { data: profileData, isFetching, isError } = useProfileQuery(token!, { skip: !token });
 
   useEffect(() => {
-    if (isError || (!isFetching && !profileData)) {
-      router.push("/");
-    }
+    
   }, [isError, isFetching, profileData, router]);
 
   if (isFetching || !token) {
