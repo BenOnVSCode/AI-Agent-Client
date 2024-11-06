@@ -7,6 +7,7 @@ import { useEffect, useState } from "react"
 import * as XLSX from 'xlsx'; // Import the xlsx library
 import { LoadingSpinner } from "./loading"
 import { useSelector } from "react-redux"
+import { useProfileQuery } from "@/app/store/services/auth"
 
 export const SalesDialog = () => {
   const [createSaleCall, { isLoading }] = useCreateSaleCallMutation();
@@ -15,10 +16,12 @@ export const SalesDialog = () => {
   const [token, setToken] = useState<string | null>(null);
   useEffect(() => {
     setToken(localStorage.getItem("token"));
+
   }, [])
-  const userId = useSelector((state:StoreType) => state.state.id)
+  const { data: profileData } = useProfileQuery(token!!, { skip: !token });
+
   const [formData, setFormData] = useState<SaleCallRequest>({
-    token: token!!,
+    token: "",
     name: "",
     address: "",
     postCode: "",
@@ -27,13 +30,10 @@ export const SalesDialog = () => {
   });
 
   useEffect(() => {
-    if(userId) {
-      setFormData((prev) => ({
-        ...prev,
-        userId: userId!!
-      }))
+    if(profileData) {
+      setFormData({...formData, userId: profileData?.result.data.id!!, token: token!!});
     }
-  }, [userId])
+  }, [profileData])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
