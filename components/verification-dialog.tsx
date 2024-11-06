@@ -20,7 +20,6 @@ export const VerificationDialog = () => {
     setToken(localStorage.getItem("token"));
     console.log(formData);
   }, [profileData])
-  const { data:profile } = useProfileQuery(token!!, { skip: !token});
   const [formData, setFormData] = useState<VerificationCallRequest>({
     initiatedBy: 0,
     token: "",
