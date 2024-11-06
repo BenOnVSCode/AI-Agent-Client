@@ -13,13 +13,17 @@ import { useProfileQuery } from "@/app/store/services/auth";
 export const VerificationDialog = () => {
   const [createVerificationCall] = useCreateVerificationCallMutation();
   const [token, setToken] = useState<string | null>(null);
+
+  const {  data: profileData } = useProfileQuery(token!!, { skip: !token });
   useEffect(() => {
+    setFormData({...formData, token: localStorage.getItem("token")!!, initiatedBy: profileData?.result.data.id!!});
     setToken(localStorage.getItem("token"));
-  }, [])
+    console.log(formData);
+  }, [profileData])
   const { data:profile } = useProfileQuery(token!!, { skip: !token});
   const [formData, setFormData] = useState<VerificationCallRequest>({
-    initiatedBy: profile?.result.data.id!!,
-    token: token!!,
+    initiatedBy: 0,
+    token: "",
     name: "",
     address: "",
     id: "",
@@ -47,6 +51,7 @@ export const VerificationDialog = () => {
   };
 
   const handleSubmit = (e: React.FormEvent) => {
+    console.log(formData);
     e.preventDefault();
     createVerificationCall(formData);
   };

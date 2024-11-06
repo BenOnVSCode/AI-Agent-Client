@@ -18,7 +18,7 @@ export default function Home() {
 	const [token, setToken] = useState<string | null>(null);
   const currentPage = useSelector((state:StoreType) => state.state.callsPage )
 	const { data: callsResponse, isFetching:callsLoading } = useGetCallsQuery({ page: currentPage, token: token!! }, { skip: !token });
-	const { data: statuses } = useGetStatusesQuery(token!!);
+	const { data: statuses } = useGetStatusesQuery(token!!, { skip: !token });
   const { data:profile } = useProfileQuery(token!!, { skip: !token});
   const name = profile?.result.data.name;
   const [isOpen, setIsOpen] = useState(false);
