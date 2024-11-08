@@ -13,6 +13,7 @@ import { VerificationDialog } from "@/components/verification-dialog";
 import { Pagination } from "@/components/pagination";
 import { useSelector } from "react-redux";
 import { changePage } from "../store/slices";
+import { FinanceSalesDialog } from "@/components/finance-sales-dialog";
 
 export default function Home() {
 	const [token, setToken] = useState<string | null>(null);
@@ -49,6 +50,7 @@ export default function Home() {
           <div className="my-2 flex items-center gap-4">
             <SalesDialog />
             <VerificationDialog />
+						<FinanceSalesDialog />
           </div>
 					<div className="w-full">
 						{callsResponse && statuses ? (

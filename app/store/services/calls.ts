@@ -46,8 +46,28 @@ export const callsApi = createApi({
           initiatedBy: data.initiatedBy
         },
       })
-    })
+    }),
+    createBulkFinanceSaleCalls: builder.mutation<CallResponse, SaleCallExcelRequest>({
+      query: (data: SaleCallExcelRequest) => ({
+        headers: {
+          Authorization: `Bearer ${data.token.replace(/"/g, '')}`,
+        },
+        url: '/createBulkFinanceSaleCalls',
+        method: 'POST',
+        body: data,
+      })
+    }),
+    createFinanceSaleCall: builder.mutation<CallResponse,  SaleCallRequest>({
+      query: (data: SaleCallRequest ) => ({
+        headers: {
+          Authorization: `Bearer ${data.token.replace(/"/g, '')}`
+        },
+        url: '/createFinanceSaleCall',
+        method: 'POST',
+        body: data,
+      })
+    })    
   })
 })
 
-export const { useGetCallsQuery, useCreateVerificationCallMutation, useCreateSaleCallMutation, useCreateBulkSalesMutation } = callsApi
+export const { useGetCallsQuery, useCreateVerificationCallMutation, useCreateSaleCallMutation, useCreateBulkSalesMutation, useCreateBulkFinanceSaleCallsMutation, useCreateFinanceSaleCallMutation } = callsApi
