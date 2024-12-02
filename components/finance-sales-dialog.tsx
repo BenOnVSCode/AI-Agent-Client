@@ -6,7 +6,6 @@ import { useCreateBulkFinanceSaleCallsMutation, useCreateFinanceSaleCallMutation
 import { useEffect, useState } from "react"
 import * as XLSX from 'xlsx'; 
 import { LoadingSpinner } from "./loading"
-import { useSelector } from "react-redux"
 import { useProfileQuery } from "@/app/store/services/auth"
 
 export const FinanceSalesDialog = () => {
@@ -44,6 +43,7 @@ export const FinanceSalesDialog = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log(fileData.length);
     e.preventDefault();
     try {
       if(fileData.length > 0) {

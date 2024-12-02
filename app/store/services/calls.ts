@@ -52,17 +52,17 @@ export const callsApi = createApi({
         headers: {
           Authorization: `Bearer ${data.token.replace(/"/g, '')}`,
         },
-        url: '/createBulkFinanceSaleCalls',
+        url: '/createBulkFinanceCarSaleCalls',
         method: 'POST',
         body: data,
       })
-    }),
+    }), 
     createFinanceSaleCall: builder.mutation<CallResponse,  SaleCallRequest>({
       query: (data: SaleCallRequest ) => ({
         headers: {
           Authorization: `Bearer ${data.token.replace(/"/g, '')}`
         },
-        url: '/createFinanceSaleCall',
+        url: '/createFinanceCarSaleCall',
         method: 'POST',
         body: data,
       })
