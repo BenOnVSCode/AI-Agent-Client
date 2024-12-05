@@ -7,7 +7,7 @@ const initialState:StoreState = {
   email: null,
   role: null,
   callsPage: 1,
-  
+  callsFilter: [],
 } 
 
 const stateSlice = createSlice({
@@ -22,9 +22,12 @@ const stateSlice = createSlice({
     },
     changePage(state, action:PayloadAction<number>){
       state.callsPage = action.payload; 
+    },
+    changeCallsFilter(state, action:PayloadAction<number[]>){
+      state.callsFilter = action.payload;
     }
   },
 });
 
-export const { changeInfo, changePage } = stateSlice.actions;
+export const { changeInfo, changePage, changeCallsFilter } = stateSlice.actions;
 export default stateSlice;

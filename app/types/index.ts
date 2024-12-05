@@ -14,6 +14,8 @@ interface LoginResponse {
 		};
 	};
 }
+type FilterOption = 'Verification' | 'WG Sales' | 'PCP Sales'
+type FilterOptionIds = 1 | 2 | 3;
 
 interface StoreState {
 	id: number | null;
@@ -21,6 +23,7 @@ interface StoreState {
 	email: string | null;
 	role: string | null;
 	callsPage: number;
+	callsFilter: number[];
 }
 
 interface StoreType {

@@ -14,11 +14,13 @@ import { Pagination } from "@/components/pagination";
 import { useSelector } from "react-redux";
 import { changePage } from "../store/slices";
 import { FinanceSalesDialog } from "@/components/finance-sales-dialog";
+import FilterCalls from "@/components/filter-calls";
 
 export default function Home() {
 	const [token, setToken] = useState<string | null>(null);
-  const currentPage = useSelector((state:StoreType) => state.state.callsPage )
-	const { data: callsResponse, isFetching:callsLoading } = useGetCallsQuery({ page: currentPage, token: token!! }, { skip: !token });
+  const currentPage = useSelector((state:StoreType) => state.state.callsPage );
+	const callsFilter = useSelector((state:StoreType) => state.state.callsFilter);
+	const { data: callsResponse, isFetching:callsLoading } = useGetCallsQuery({ page: currentPage, token: token!!, filter: callsFilter }, { skip: !token });
 	const { data: statuses } = useGetStatusesQuery(token!!, { skip: !token });
   const { data:profile } = useProfileQuery(token!!, { skip: !token});
   const name = profile?.result.data.name;
@@ -47,11 +49,15 @@ export default function Home() {
 						<span className="font-normal">{name}</span>{" "}
 						👋👋
 					</h1>
-          <div className="my-2 flex items-center gap-4">
+					<div className="justify-between flex w-full items-center">
+						<div className="my-2 flex items-center gap-4">
             <SalesDialog />
             <VerificationDialog />
 						<FinanceSalesDialog />
-          </div>
+          	</div>
+						<FilterCalls />
+					</div>
+          
 					<div className="w-full">
 						{callsResponse && statuses ? (
 							<EnhancedCallLog  selectedCall={selectedCall} setSelectedCall={setSelectedCall} calls={callsResponse.result.data.calls} />

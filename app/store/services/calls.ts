@@ -6,9 +6,9 @@ export const callsApi = createApi({
     baseUrl: process.env.API_URL,
   }),
   endpoints: (builder) => ({
-    getCalls: builder.query<CallResponse, { page: number, token: string }>({
-      query: ({ page, token }) => ({
-        url: `getAllCalls?page=${page}`,
+    getCalls: builder.query<CallResponse, { page: number, token: string, filter: number[]}>({
+      query: ({ page, token, filter}) => ({
+        url: `getAllCalls?page=${page}&callType=${filter.join("|")}`,
         headers: {
           Authorization: `Bearer ${token.replace(/"/g, '')}`,
         },
