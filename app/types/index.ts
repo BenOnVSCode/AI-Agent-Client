@@ -144,7 +144,6 @@ interface UserRequest extends RequestWithToken {
 	email: string,
 	role: string,
 	password: string,
-
 }
 
 

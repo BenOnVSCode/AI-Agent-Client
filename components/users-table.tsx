@@ -44,9 +44,14 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import { useDeleteUserMutation, useGetUsersQuery, useUpdateUserMutation } from "@/app/store/services/users";
+import {
+	useDeleteUserMutation,
+	useGetUsersQuery,
+	useUpdateUserMutation,
+} from "@/app/store/services/users";
 import AdminPageWrapper from "@/app/AdminPageWrapper";
 import Navbar from "./navbar";
+import { AddUserButton } from "./add-user";
 
 interface User {
 	id: number;
@@ -55,8 +60,6 @@ interface User {
 	role: string;
 	createdAt: string;
 }
-
-
 
 export default function UserTable() {
 	const [users, setUsers] = useState<User[]>([]);
@@ -102,7 +105,7 @@ export default function UserTable() {
 				user.id === updatedUser.id ? updatedUser : user
 			)
 		);
-		updateUser({...updatedUser, token: token!!});
+		updateUser({ ...updatedUser, token: token!! });
 		setIsEditSheetOpen(false);
 	};
 
@@ -125,58 +128,70 @@ export default function UserTable() {
 						onChange={(e) => setSearchTerm(e.target.value)}
 						className="max-w-sm"
 					/>
-					<DropdownMenu>
-						<DropdownMenuTrigger asChild>
-							<Button variant="outline">
-								<Filter className="mr-2 h-4 w-4" />
-								Filter
-							</Button>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent>
-							<DropdownMenuItem onSelect={() => setRoleFilter("")}>
-								All Roles
-							</DropdownMenuItem>
-							<DropdownMenuItem onSelect={() => setRoleFilter("ADMIN")}>
-								ADMIN
-							</DropdownMenuItem>
-							<DropdownMenuItem onSelect={() => setRoleFilter("USER")}>
-								USER
-							</DropdownMenuItem>
-						</DropdownMenuContent>
-					</DropdownMenu>
+					<div className="flex gap-4">
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<Button variant="outline">
+									<Filter className="mr-2 h-4 w-4" />
+									Filter
+								</Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent>
+								<DropdownMenuItem onSelect={() => setRoleFilter("")}>
+									All Roles
+								</DropdownMenuItem>
+								<DropdownMenuItem onSelect={() => setRoleFilter("ADMIN")}>
+									ADMIN
+								</DropdownMenuItem>
+								<DropdownMenuItem onSelect={() => setRoleFilter("USER")}>
+									USER
+								</DropdownMenuItem>
+							</DropdownMenuContent>
+						</DropdownMenu>
+						<AddUserButton />
+					</div>
 				</div>
-			<div className="rounded-md border shadow-md overflow-hidden my-4">
-			<Table className="border rounded-lg shadow-md overflow-hidden">
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Role</TableHead>
-            <TableHead>Creation Date</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {filteredUsers.map((user) => (
-            <TableRow key={user.id}>
-              <TableCell>{user.name}</TableCell>
-              <TableCell>{user.email}</TableCell>
-              <TableCell>{user.role}</TableCell>
-              <TableCell>{format(new Date(user.createdAt), 'PP')}</TableCell>
-              <TableCell>
-                <Button variant="ghost" size="icon" onClick={() => handleEdit(user)}>
-                  <Pencil className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="icon" onClick={() => handleDelete(user.id)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-			</div>
-			
+				<div className="rounded-md border shadow-md overflow-hidden my-4">
+					<Table className="border rounded-lg shadow-md overflow-hidden">
+						<TableHeader>
+							<TableRow>
+								<TableHead>Name</TableHead>
+								<TableHead>Email</TableHead>
+								<TableHead>Role</TableHead>
+								<TableHead>Creation Date</TableHead>
+								<TableHead>Actions</TableHead>
+							</TableRow>
+						</TableHeader>
+						<TableBody>
+							{filteredUsers.map((user) => (
+								<TableRow key={user.id}>
+									<TableCell>{user.name}</TableCell>
+									<TableCell>{user.email}</TableCell>
+									<TableCell>{user.role}</TableCell>
+									<TableCell>
+										{format(new Date(user.createdAt), "PP")}
+									</TableCell>
+									<TableCell>
+										<Button
+											variant="ghost"
+											size="icon"
+											onClick={() => handleEdit(user)}
+										>
+											<Pencil className="h-4 w-4" />
+										</Button>
+										<Button
+											variant="ghost"
+											size="icon"
+											onClick={() => handleDelete(user.id)}
+										>
+											<Trash2 className="h-4 w-4" />
+										</Button>
+									</TableCell>
+								</TableRow>
+							))}
+						</TableBody>
+					</Table>
+				</div>
 
 				<Sheet open={isEditSheetOpen} onOpenChange={setIsEditSheetOpen}>
 					<SheetContent>
@@ -219,11 +234,7 @@ export default function UserTable() {
 								</div>
 								<div>
 									<Label htmlFor="password">Password</Label>
-									<Input
-										id="password"
-										name="password"
-										type="password"
-									/>
+									<Input id="password" name="password" type="password" />
 								</div>
 								<div>
 									<Label htmlFor="role">Role</Label>
