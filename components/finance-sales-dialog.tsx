@@ -76,7 +76,7 @@ export const FinanceSalesDialog = () => {
       .filter(row => row.some((cell:any) => cell !== undefined && cell !== "")) // Filter out empty rows
       .map(row => ({
         name: row[0] || "",
-        number: row[3] || ""  // Only name and number
+        number: row[1] || ""  // Only name and number
       }));
   };
 
