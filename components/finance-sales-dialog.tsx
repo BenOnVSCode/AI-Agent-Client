@@ -11,19 +11,18 @@ import { useProfileQuery } from "@/app/store/services/auth"
 export const FinanceSalesDialog = () => {
   const [createFinanceSaleCall, { isLoading }] = useCreateFinanceSaleCallMutation();
   const [createBulkFinanceSaleCalls, { isLoading: isBulkLoading }] = useCreateBulkFinanceSaleCallsMutation();
-  const [fileData, setFileData] = useState<Array<{ name: string; address: string; postCode: string; number: string }>>([]);
+  const [fileData, setFileData] = useState<Array<{ name: string; number: string }>>([]);  // Removed address and postCode
   const [token, setToken] = useState<string | null>(null);
+
   useEffect(() => {
     setToken(localStorage.getItem("token"));
-
   }, [])
+
   const { data: profileData } = useProfileQuery(token!!, { skip: !token });
 
-  const [formData, setFormData] = useState<SaleCallRequest>({
+  const [formData, setFormData] = useState<FinanceSaleCallRequest>({
     token: "",
     name: "",
-    address: "",
-    postCode: "",
     userId: 0,
     number: ""
   });
@@ -43,7 +42,6 @@ export const FinanceSalesDialog = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log(fileData.length);
     e.preventDefault();
     try {
       if(fileData.length > 0) {
@@ -73,14 +71,12 @@ export const FinanceSalesDialog = () => {
     }
   };
   
-  const formatExcelData = (data: any[]): { name: string; address: string; postCode: string; number: string }[] => {
+  const formatExcelData = (data: any[]): { name: string; number: string }[] => {  // Removed address and postCode
     return data
       .filter(row => row.some((cell:any) => cell !== undefined && cell !== "")) // Filter out empty rows
       .map(row => ({
         name: row[0] || "",
-        address: row[1] || "",
-        postCode: row[2] || "",
-        number: row[3] || ""
+        number: row[3] || ""  // Only name and number
       }));
   };
 
@@ -107,31 +103,6 @@ export const FinanceSalesDialog = () => {
             />
           </div>
           
-          <div className="flex items-center gap-4">
-            <Label htmlFor="clientAddress" className="w-1/4 text-right">
-              Address
-            </Label>
-            <Input 
-              id="clientAddress" 
-              name="address" 
-              className="flex-1" 
-              value={formData.address} 
-              onChange={handleChange} 
-            />
-          </div>
-          
-          <div className="flex items-center gap-4">
-            <Label htmlFor="postCode" className="w-1/4 text-right">
-              Post Code
-            </Label>
-            <Input 
-              id="postCode" 
-              name="postCode" 
-              className="flex-1" 
-              value={formData.postCode} 
-              onChange={handleChange} 
-            />
-          </div>
           <div className="flex items-center gap-4">
             <Label htmlFor="number" className="w-1/4 text-right">
               Number

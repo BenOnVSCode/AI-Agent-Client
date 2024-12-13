@@ -47,7 +47,7 @@ export const callsApi = createApi({
         },
       })
     }),
-    createBulkFinanceSaleCalls: builder.mutation<CallResponse, SaleCallExcelRequest>({
+    createBulkFinanceSaleCalls: builder.mutation<CallResponse, FinanceSaleCallExcelRequest>({
       query: (data: SaleCallExcelRequest) => ({
         headers: {
           Authorization: `Bearer ${data.token.replace(/"/g, '')}`,
@@ -57,7 +57,7 @@ export const callsApi = createApi({
         body: data,
       })
     }), 
-    createFinanceSaleCall: builder.mutation<CallResponse,  SaleCallRequest>({
+    createFinanceSaleCall: builder.mutation<CallResponse,  FinanceSaleCallRequest>({
       query: (data: SaleCallRequest ) => ({
         headers: {
           Authorization: `Bearer ${data.token.replace(/"/g, '')}`

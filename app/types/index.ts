@@ -111,6 +111,19 @@ interface SaleCallRequest extends RequestWithToken {
 	userId: number,
 }
 
+interface FinanceSaleCallRequest extends RequestWithToken {
+	name: string, 
+	userId: number,
+	number: string
+}
+interface FinanceSaleCallExcelRequest {
+	calls: Array<{
+		name: string, 
+		number: string,
+	}>,
+	initiatedBy: number,
+	token: string
+}
 
 interface SaleCallExcelRequest {
 	calls: Array<{

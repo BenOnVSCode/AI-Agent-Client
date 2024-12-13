@@ -18,7 +18,6 @@ export const VerificationDialog = () => {
   useEffect(() => {
     setFormData({...formData, token: localStorage.getItem("token")!!, initiatedBy: profileData?.result.data.id!!});
     setToken(localStorage.getItem("token"));
-    console.log(formData);
   }, [profileData])
   const [formData, setFormData] = useState<VerificationCallRequest>({
     initiatedBy: 0,
@@ -50,7 +49,6 @@ export const VerificationDialog = () => {
   };
 
   const handleSubmit = (e: React.FormEvent) => {
-    console.log(formData);
     e.preventDefault();
     createVerificationCall(formData);
   };
