@@ -17,8 +17,8 @@ To get started with this project, follow these steps:
 1. **Clone the repository:**
 
    ```bash
-   git clone <repository-url>
-   cd <repository-name>
+   git clone https://github.com/BenOnVSCode/AI-Agent-Client
+   cd AI-Agent-Client
    ```
 
 2. **Install dependencies:**
